@@ -1,0 +1,18 @@
+# train: images/train
+# val: images/val
+# test: images/test
+
+# nc: 4  # number of classes (change if needed)
+# names: ['big_room', 'small_room', 'Door', 'Walls']
+
+
+
+
+# data.yaml
+ # base dataset path
+train: images/train
+val: images/val
+test: images/test  # optional
+
+nc: 8
+names: ['Door', 'Walls', 'big_room','kitchen','bathroom', 'small_room','outer_wall', 'inner_wall','floor']

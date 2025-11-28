@@ -202,6 +202,15 @@ def train(hyp, opt, device, callbacks):
     init_seeds(opt.seed + 1 + RANK, deterministic=True)
     with torch_distributed_zero_first(LOCAL_RANK):
         data_dict = data_dict or check_dataset(data)  # check if None
+
+        # --- ADDED: Print resolved dataset paths and check existence ---
+        train_path, val_path = data_dict["train"], data_dict["val"]
+        if not os.path.exists(str(train_path)):
+            LOGGER.error(f"Train images/labels path does not exist: {train_path}")
+        if not os.path.exists(str(val_path)):
+            LOGGER.error(f"Val images/labels path does not exist: {val_path}")
+        # --------------------------------------------------------------
+
     train_path, val_path = data_dict["train"], data_dict["val"]
     nc = 1 if single_cls else int(data_dict["nc"])  # number of classes
     names = {0: "item"} if single_cls and len(data_dict["names"]) != 1 else data_dict["names"]  # class names
@@ -303,6 +312,13 @@ def train(hyp, opt, device, callbacks):
     )
     labels = np.concatenate(dataset.labels, 0)
     mlc = int(labels[:, 0].max())  # max label class
+
+    # --- ADDED: Print unique label classes and nc for debugging ---
+    unique_classes = np.unique(labels[:, 0]).astype(int)
+    LOGGER.error(f"Unique label classes found in dataset: {unique_classes}")
+    LOGGER.error(f"Number of classes (nc) specified in data.yaml: {nc}")
+    # -------------------------------------------------------------
+
     assert mlc < nc, f"Label class {mlc} exceeds nc={nc} in {data}. Possible class labels are 0-{nc - 1}"
 
     # Process 0
